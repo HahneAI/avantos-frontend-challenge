@@ -49,7 +49,7 @@ describe('FormList', () => {
     );
 
     expect(screen.getByText('2 fields')).toBeInTheDocument();
-    expect(screen.getByText('1 fields')).toBeInTheDocument();
+    expect(screen.getByText('1 field')).toBeInTheDocument();
   });
 
   it('should display dependency count for each form', () => {
@@ -64,7 +64,7 @@ describe('FormList', () => {
     );
 
     expect(screen.getByText('0 dependencies')).toBeInTheDocument();
-    expect(screen.getByText('1 dependencies')).toBeInTheDocument();
+    expect(screen.getByText('1 dependency')).toBeInTheDocument();
   });
 
   it('should call onSelectForm when a form is clicked', () => {

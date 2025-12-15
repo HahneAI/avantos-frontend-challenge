@@ -98,7 +98,7 @@ export function DataSourceTree({
                   />
                 </svg>
                 <span className="font-medium text-gray-900">{source.name}</span>
-                <span className="text-xs text-gray-500">({fields.length} fields)</span>
+                <span className="text-xs text-gray-500">({fields.length} {fields.length === 1 ? 'field' : 'fields'})</span>
               </div>
             </button>
 
