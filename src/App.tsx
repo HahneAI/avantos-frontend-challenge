@@ -5,7 +5,7 @@ import { DataSourceModal } from './components/DataSourceModal';
 import { useForms } from './hooks/useForms';
 import { usePrefillMappings } from './hooks/usePrefillMappings';
 import { useDataSources } from './hooks/useDataSources';
-import { FormField } from './types';
+import { usePrefillWorkflow } from './hooks/usePrefillWorkflow';
 
 /**
  * Main application component
@@ -13,8 +13,6 @@ import { FormField } from './types';
  */
 function App() {
   const [selectedFormId, setSelectedFormId] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedField, setSelectedField] = useState<FormField | null>(null);
 
   // Fetch forms data
   const { forms, formGraph, globalData, loading, error } = useForms();
@@ -34,24 +32,14 @@ function App() {
   const selectedForm = selectedFormId ? formGraph[selectedFormId] : null;
   const formMappings = selectedFormId ? getMappingsForForm(selectedFormId) : [];
 
-  const handleOpenModal = (fieldId: string) => {
-    if (!selectedForm) return;
-
-    const field = selectedForm.fields.find(f => f.id === fieldId);
-    if (!field) return;
-
-    setSelectedField(field);
-    setIsModalOpen(true);
-  };
-
-  const handleSelectMapping = (partialMapping: Omit<typeof setMapping extends (arg: infer T) => void ? T : never, 'targetFormId'>) => {
-    if (!selectedFormId) return;
-
-    setMapping({
-      ...partialMapping,
-      targetFormId: selectedFormId,
-    });
-  };
+  // Manage prefill workflow (modal state and mapping submission)
+  const {
+    isModalOpen,
+    selectedField,
+    handleOpenModal,
+    handleCloseModal,
+    handleSelectMapping,
+  } = usePrefillWorkflow(selectedForm, selectedFormId, setMapping);
 
   if (loading) {
     return (
@@ -164,10 +152,7 @@ function App() {
         transitiveDependencies={dataSources.transitiveDependencies}
         globalSources={dataSources.globalSources}
         onSelectField={handleSelectMapping}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedField(null);
-        }}
+        onClose={handleCloseModal}
       />
     </div>
   );

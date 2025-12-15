@@ -24,5 +24,19 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     css: true,
     include: ['**/*.{test,spec}.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'json'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        '**/*.test.{ts,tsx}',
+        '**/*.spec.{ts,tsx}',
+        '**/types/',
+        'vite.config.ts',
+        'tailwind.config.js',
+        'postcss.config.js',
+      ],
+    },
   },
 });
