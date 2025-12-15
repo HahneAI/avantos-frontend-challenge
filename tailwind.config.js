@@ -7,6 +7,15 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Avantos Brand Colors
+        avantos: {
+          cerulean: '#0094d1',
+          'cerulean-dark': '#007ab0',
+          'cerulean-darker': '#006090',
+          dark: '#060606',
+          light: '#ffffff',
+        },
+        // Legacy primary colors (keeping for backward compatibility)
         primary: {
           50: '#f0f9ff',
           100: '#e0f2fe',

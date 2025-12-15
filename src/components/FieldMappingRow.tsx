@@ -87,7 +87,7 @@ export function FieldMappingRow({
         )}
         <button
           onClick={() => onOpenModal(field.id)}
-          className="px-3 py-1.5 text-sm bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors"
+          className="btn-avantos"
         >
           {mapping ? 'Edit' : 'Set Mapping'}
         </button>

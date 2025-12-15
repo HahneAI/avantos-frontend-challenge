@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DataSource, DataField, FormField, PrefillMapping } from '../types';
 import { DataSourceTree } from './DataSourceTree';
+import { ConfirmationDialog } from './ConfirmationDialog';
 
 interface DataSourceModalProps {
   /** Whether the modal is open */
@@ -40,20 +41,38 @@ export function DataSourceModal({
   onClose,
 }: DataSourceModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [pendingMapping, setPendingMapping] = useState<{
+    source: DataSource;
+    field: DataField;
+  } | null>(null);
+
+  // Cleanup confirmation state when modal closes to prevent memory leaks
+  useEffect(() => {
+    if (!isOpen) {
+      setShowConfirmation(false);
+      setPendingMapping(null);
+    }
+  }, [isOpen]);
 
   if (!isOpen || !targetField) {
     return null;
   }
 
   const handleSelectField = (source: DataSource, field: DataField) => {
-    /**MANUAL TASK 2 BELOW */
+    /** TASK 2 COMPLETED: Custom confirmation dialog for type validation */
     if (field.type !== targetField.type) {
-      const proceed = window.confirm(
-        `Warning: The source data type "${field.type}" does NOT match target field type "${targetField.type}". Do you still wish to continue with the prefill?`
-      );
-      if (!proceed) return;
+      // Store pending mapping and show confirmation dialog
+      setPendingMapping({ source, field });
+      setShowConfirmation(true);
+      return;
     }
 
+    // Types match, proceed immediately
+    createMapping(source, field);
+  };
+
+  const createMapping = (source: DataSource, field: DataField) => {
     const mapping: PrefillMapping = {
       targetFormId: '', // Will be set by parent
       targetFieldId: targetField.id,
@@ -67,23 +86,49 @@ export function DataSourceModal({
     onClose();
   };
 
+  const handleConfirmTypeMismatch = () => {
+    if (pendingMapping) {
+      createMapping(pendingMapping.source, pendingMapping.field);
+    }
+    setShowConfirmation(false);
+    setPendingMapping(null);
+  };
+
+  const handleCancelTypeMismatch = () => {
+    setShowConfirmation(false);
+    setPendingMapping(null);
+  };
+
   const hasAnySources =
     directDependencies.length > 0 ||
     transitiveDependencies.length > 0 ||
     globalSources.length > 0;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
-        onClick={onClose}
+    <>
+      {/* Confirmation Dialog for Type Mismatch */}
+      <ConfirmationDialog
+        isOpen={showConfirmation}
+        message={`Warning: The source data type does NOT match the target field type. Do you still wish to continue with the prefill?`}
+        sourceType={pendingMapping?.field.type || ''}
+        targetType={targetField.type}
+        onConfirm={handleConfirmTypeMismatch}
+        onCancel={handleCancelTypeMismatch}
       />
 
-      {/* Modal */}
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white rounded-lg w-full max-w-2xl modal-enhanced">
+      <div className="fixed inset-0 z-50 overflow-y-auto">
+        {/** MANUAL TASK 3 BELOW */}
+
+        {/* Backdrop - Closes confirmation dialog if open, otherwise closes modal */}
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+          onClick={showConfirmation ? handleCancelTypeMismatch : onClose}
+          aria-hidden="true"
+        />
+
+        {/* Modal */}
+        <div className="flex min-h-full items-center justify-center p-4">
+          <div className="relative bg-white rounded-lg w-full max-w-2xl modal-enhanced">
           {/* Header */}
           <div className="flex items-center justify-between modal-header">
             <div>
@@ -134,7 +179,7 @@ export function DataSourceModal({
                     </p>
                     <DataSourceTree
                       dataSources={directDependencies}
-                      onSelectField={handleSelectField}
+                      onSelectField={showConfirmation ? () => {} : handleSelectField}
                       filterText={searchTerm}
                     />
                   </div>
@@ -149,7 +194,7 @@ export function DataSourceModal({
                     </p>
                     <DataSourceTree
                       dataSources={transitiveDependencies}
-                      onSelectField={handleSelectField}
+                      onSelectField={showConfirmation ? () => {} : handleSelectField}
                       filterText={searchTerm}
                     />
                   </div>
@@ -164,7 +209,7 @@ export function DataSourceModal({
                     </p>
                     <DataSourceTree
                       dataSources={globalSources}
-                      onSelectField={handleSelectField}
+                      onSelectField={showConfirmation ? () => {} : handleSelectField}
                       filterText={searchTerm}
                     />
                   </div>
@@ -174,6 +219,7 @@ export function DataSourceModal({
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

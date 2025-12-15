@@ -3,6 +3,59 @@
 @tailwind utilities;
 
 /* ============================================
+   Avantos Brand Button Styles
+   Usage: Apply "btn-avantos" to buttons
+   Benefits: Consistent branding, reusable, accessible
+   ============================================ */
+
+.btn-avantos {
+  background-color: #0094d1;
+  color: #ffffff;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-avantos:hover {
+  background-color: #007ab0;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 6px -1px rgba(0, 148, 209, 0.3),
+              0 2px 4px -1px rgba(0, 148, 209, 0.2);
+}
+
+.btn-avantos:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.btn-avantos:focus-visible {
+  outline: 2px solid #0094d1;
+  outline-offset: 2px;
+}
+
+.btn-avantos:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-avantos:disabled:hover {
+  background-color: #9ca3af;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ============================================
    Custom Modal Enhancement Class
    Usage: Apply "modal-enhanced" to modal container
    Benefits: Reusable, maintainable, extensible
@@ -155,4 +208,21 @@ body {
 
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Slide and scale animation for confirmation dialogs */
+@keyframes slideInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-slideInScale {
+  animation: slideInScale 0.2s ease-out;
 }
